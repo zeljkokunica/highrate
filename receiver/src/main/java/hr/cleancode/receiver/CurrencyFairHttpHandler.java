@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.DefaultHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
@@ -28,14 +29,11 @@ public class CurrencyFairHttpHandler extends SimpleChannelInboundHandler<Object>
 	@Override
 	public void channelRead0(ChannelHandlerContext ctx,
 			Object msg) {
-
 		if (msg instanceof HttpRequest) {
 			HttpRequest req = (HttpRequest) msg;
-
 			String reqUrl = req.getUri();
-
 			System.out.println(reqUrl);
-
+			System.out.println(req.toString());
 			// do something further with request here ...
 
 			// this is the response part
