@@ -1,0 +1,32 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+jar {
+	manifest {
+		attributes 'Implementation-Title': 'common', 'Implementation-Version': "${version}"
+	}
+}
+
+task copyToLib(type: Copy) {
+    into "$buildDir/dependencies"
+    from configurations.runtime
+}
+
+build.dependsOn(copyToLib)
+
+dependencies {
+    compile 'joda-time:joda-time:2.7'
+    testCompile 'junit:junit:4.0'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}

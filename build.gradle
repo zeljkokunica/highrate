@@ -1,0 +1,25 @@
+apply plugin: 'idea'
+
+project.ext {
+    springVersion = '4.1.4.RELEASE'
+    servletApiVersion = '3.1.0'
+    tomcatVersion = '8.0.18'
+}
+
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath('com.moowork.gradle:gradle-node-plugin:0.8')
+        classpath('com.moowork.gradle:gradle-grunt-plugin:0.6')
+    }
+}
+
+allprojects {
+    version = "1.0.0.0"
+    repositories {
+        mavenCentral()
+    }
+}
