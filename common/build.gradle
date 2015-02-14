@@ -19,6 +19,11 @@ build.dependsOn(copyToLib)
 
 dependencies {
     compile 'joda-time:joda-time:2.7'
+    compile 'ch.qos.logback:logback-classic:1.1.2'
+    compile 'org.slf4j:slf4j-api:1.7.9'
+    compile 'com.datastax.cassandra:cassandra-driver-core:2.1.4'
+    compile 'org.hectorclient:hector-core:1.1-4'
+    compile 'com.google.guava:guava:18.0'
     testCompile 'junit:junit:4.0'
 }
 

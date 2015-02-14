@@ -5,26 +5,32 @@ import hr.cleancode.receiver.JsonRequestHttpHandler;
 
 import java.io.IOException;
 
+import hr.cleancode.repository.MessageRepository;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by zac on 12/02/15.
  */
 public class CFHttpHandler extends JsonRequestHttpHandler {
+	private static final Logger logger = LoggerFactory.getLogger(CFHttpHandler.class);
 	private final ObjectMapper mapper;
-	public CFHttpHandler(ObjectMapper mapper) {
+	private MessageRepository messageRepository;
+
+	public CFHttpHandler(ObjectMapper mapper, MessageRepository messageRepository) {
 		this.mapper = mapper;
+		this.messageRepository = messageRepository;
 	}
 
 	@Override
 	public boolean handleRequestInput(String content) {
 		try {
 			TransferRequest request = mapper.readValue(content.getBytes(), TransferRequest.class);
-			System.out.println(request.toString());
-
+			messageRepository.saveTransferRequest(request);
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 			return false;
 		}
 		return true;

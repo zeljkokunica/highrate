@@ -2,6 +2,9 @@ package hr.cleancode.receiver;
 
 import hr.cleancode.receiver.cf.CFHttpHandler;
 import hr.cleancode.receiver.cf.DateTimeModule;
+import hr.cleancode.repository.MessageRepository;
+import hr.cleancode.repository.MessageRepositoryCassandra;
+import hr.cleancode.repository.MessageRepositoryInMemory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
@@ -25,7 +28,7 @@ public class Receiver {
 
 		final ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new DateTimeModule());
-
+		final MessageRepository messageRepository = new MessageRepositoryCassandra("localhost", "highrate", false);
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -44,7 +47,7 @@ public class Receiver {
 									ChannelPipeline p = ch.pipeline();
 									p.addLast(new HttpRequestDecoder());
 									p.addLast(new HttpResponseEncoder());
-									p.addLast(new CFHttpHandler(mapper));
+									p.addLast(new CFHttpHandler(mapper, messageRepository));
 								}
 							});
 

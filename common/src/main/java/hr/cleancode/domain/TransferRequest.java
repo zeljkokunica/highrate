@@ -1,6 +1,5 @@
 package hr.cleancode.domain;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.joda.time.DateTime;
 
 /**
