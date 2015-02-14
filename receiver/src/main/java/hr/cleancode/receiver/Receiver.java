@@ -1,5 +1,7 @@
 package hr.cleancode.receiver;
 
+import hr.cleancode.receiver.cf.CFHttpHandler;
+import hr.cleancode.receiver.cf.DateTimeModule;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
@@ -12,6 +14,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  * Created by zac on 12/02/15.
@@ -19,6 +22,9 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 public class Receiver {
 	public static void main(String[] args)
 			throws InterruptedException {
+
+		final ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new DateTimeModule());
 
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -38,7 +44,7 @@ public class Receiver {
 									ChannelPipeline p = ch.pipeline();
 									p.addLast(new HttpRequestDecoder());
 									p.addLast(new HttpResponseEncoder());
-									p.addLast(new CurrencyFairHttpHandler());
+									p.addLast(new CFHttpHandler(mapper));
 								}
 							});
 
