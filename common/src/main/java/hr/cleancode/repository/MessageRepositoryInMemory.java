@@ -12,7 +12,9 @@ public class MessageRepositoryInMemory implements MessageRepository {
 	@Override
 	public void saveTransferRequest(TransferRequest transferRequest) {
 		Long currentCount = counter.getAndAdd(1);
-		System.out.println(currentCount + ": " + transferRequest);
+		if (currentCount % 100 == 0) {
+			System.out.println(currentCount);
+		}
 	}
 
 	@Override

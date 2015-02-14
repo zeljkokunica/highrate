@@ -5,6 +5,7 @@ import hr.cleancode.receiver.cf.DateTimeModule;
 import hr.cleancode.repository.MessageRepository;
 import hr.cleancode.repository.MessageRepositoryCassandra;
 import hr.cleancode.repository.MessageRepositoryInMemory;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
@@ -17,6 +18,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.codehaus.jackson.map.ObjectMapper;
 
 /**
@@ -29,9 +33,10 @@ public class Receiver {
 		final ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new DateTimeModule());
 		final MessageRepository messageRepository = new MessageRepositoryCassandra("localhost", "highrate", false);
+//		final MessageRepository messageRepository = new MessageRepositoryInMemory();
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
-
+		final AtomicLong connectionCount = new AtomicLong(0);
 		try {
 			ServerBootstrap bootstrap = new ServerBootstrap();
 			bootstrap.group(bossGroup, workerGroup)
@@ -44,6 +49,10 @@ public class Receiver {
 								@Override
 								public void initChannel(
 										SocketChannel ch) throws Exception {
+									Long connections = connectionCount.addAndGet(1);
+									if (connections % 100 == 0) {
+										System.out.println("Connections " + connections);
+									}
 									ChannelPipeline p = ch.pipeline();
 									p.addLast(new HttpRequestDecoder());
 									p.addLast(new HttpResponseEncoder());

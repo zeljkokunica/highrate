@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by zac on 14/02/15.
@@ -32,10 +33,10 @@ public class MessageRepositoryCassandra implements MessageRepository {
 	private String cassandraHost;
 	private Random random = new Random();
 	private ArrayBlockingQueue<ResultSetFuture> queue = new ArrayBlockingQueue<>(10000);
-
-	public MessageRepositoryCassandra(String cassandraHost, String keyspace, boolean asyncPersistence) {
+	private final AtomicLong insertCount = new AtomicLong(0);
+	public MessageRepositoryCassandra(String cassandraHost, String keySpace, boolean asyncPersistence) {
 		this.cassandraHost = cassandraHost;
-		this.keySpace = keyspace;
+		this.keySpace = keySpace;
 		this.asyncPersistence = asyncPersistence;
 
 		SocketOptions socketOptions = new SocketOptions();
@@ -48,7 +49,7 @@ public class MessageRepositoryCassandra implements MessageRepository {
 		for (Host host : metadata.getAllHosts()) {
 			logger.info("Datacenter: {}, Host: {}, Rack: {}", host.getDatacenter(), host.getAddress(), host.getRack());
 		}
-		this.session = cluster.connect(keyspace);
+		this.session = cluster.connect(keySpace);
 		prepareStatements();
 	}
 
@@ -72,6 +73,10 @@ public class MessageRepositoryCassandra implements MessageRepository {
 				transferRequest.getAmountSell().floatValue(),
 				transferRequest.getOriginatingCountry()
 		);
+		Long currentCount = insertCount.addAndGet(1);
+		if (currentCount % 100 == 0) {
+			System.out.println("Current insertions " + currentCount);
+		}
 		if (this.asyncPersistence) {
 			queue.add(session.executeAsync(bs));
 			if (queue.size() % 1000 == 0) {
