@@ -18,7 +18,8 @@ task copyToLib(type: Copy) {
 build.dependsOn(copyToLib)
 
 dependencies {
-    project(":common")
+    compile project(":common")
+    compile 'org.springframework.amqp:spring-rabbit:1.4.3.RELEASE'
     testCompile 'junit:junit:4.0'
 }
 

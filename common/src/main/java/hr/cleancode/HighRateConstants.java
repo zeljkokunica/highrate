@@ -14,15 +14,17 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 public class HighRateConstants {
 	public static final String EXCHANGE = "highRate";
 	public static final String QUEUE_NAME = "transferRequests";
+	public static final String ROUTING_KEY_TRANSFER_REQUEST = "highrate.transferRequest";
+	public static final String ROUTING_KEY_STATISTICS = "highrate.transferStatistics";
 
-	public static ConnectionFactory getConnectionFactory() {
+	public static ConnectionFactory getConnectionFactory(String binding) {
 		ConnectionFactory cf = new CachingConnectionFactory();
 		RabbitAdmin admin = new RabbitAdmin(cf);
-		Queue queue = new Queue("transferRequests");
+		Queue queue = new Queue(QUEUE_NAME);
 		admin.declareQueue(queue);
-		TopicExchange exchange = new TopicExchange("highRate");
+		TopicExchange exchange = new TopicExchange(EXCHANGE);
 		admin.declareExchange(exchange);
-		admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("highrate.*"));
+		admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with(binding));
 		return cf;
 	}
 }

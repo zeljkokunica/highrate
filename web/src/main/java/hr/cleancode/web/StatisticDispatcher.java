@@ -1,36 +1,27 @@
-package hr.cleancode.processor;
+package hr.cleancode.web;
 
 import hr.cleancode.HighRateConstants;
 import hr.cleancode.domain.TransferRequest;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import hr.cleancode.domain.TransferRequestStatistics;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Created by zac on 14/02/15.
+ * Created by zac on 15/02/15.
  */
-public class Processor {
-	private static final Logger logger = LoggerFactory.getLogger(Processor.class);
-	private CountTransferRequestProcessor processor = new CountTransferRequestProcessor();
+public class StatisticDispatcher {
 
 	public void startProcessing() throws InterruptedException {
-		final AtomicInteger cnt = new AtomicInteger(0);
 		ConnectionFactory factoryRequests = HighRateConstants
-				.getConnectionFactory(HighRateConstants.ROUTING_KEY_TRANSFER_REQUEST);
+				.getConnectionFactory(HighRateConstants.ROUTING_KEY_STATISTICS);
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(factoryRequests);
 		Object listener = new Object() {
 			public void handleMessage(Object object) throws IOException {
-				System.out.println(cnt.addAndGet(1));
-				if (object instanceof TransferRequest) {
-					TransferRequest transferRequest = (TransferRequest) object;
-					processor.processTransferRequest(transferRequest);
+				if (object instanceof TransferRequestStatistics) {
+					System.out.println(object);
 				}
 			}
 		};
@@ -41,7 +32,7 @@ public class Processor {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		new Processor().startProcessing();
+		new StatisticDispatcher().startProcessing();
 	}
 
 }

@@ -6,6 +6,7 @@ import hr.cleancode.receiver.JsonRequestHttpHandler;
 import hr.cleancode.repository.MessageRepository;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ public class CFHttpHandler extends JsonRequestHttpHandler {
 	private final ObjectMapper mapper;
 	private MessageRepository messageRepository;
 	private RabbitTemplate template;
+	private AtomicInteger cnt = new AtomicInteger(0);
 	public CFHttpHandler(ObjectMapper mapper, MessageRepository messageRepository, RabbitTemplate template) {
 		this.mapper = mapper;
 		this.messageRepository = messageRepository;
@@ -32,7 +34,7 @@ public class CFHttpHandler extends JsonRequestHttpHandler {
 			TransferRequest request = mapper.readValue(content.getBytes(), TransferRequest.class);
 			request.validate();
 			messageRepository.saveTransferRequest(request);
-			template.convertAndSend("highRate", "highrate.transfer", request);
+			template.convertAndSend(HighRateConstants.EXCHANGE, HighRateConstants.ROUTING_KEY_TRANSFER_REQUEST, request);
 		}
 		catch (IOException e) {
 			logger.error(e.getMessage(), e);

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,7 +41,7 @@ public class TransferRequestStatistics implements Serializable {
 				volumeSell + request.getAmountSell(),
 				volumeBuy + request.getAmountBuy(),
 				request.getRate(),
-				newTopRequests.subList(0, Math.min(10, newTopRequests.size())));
+				new ArrayList<>(newTopRequests.subList(0, Math.min(10, newTopRequests.size()))));
 		return result;
 	}
 

@@ -17,7 +17,8 @@ public class Reader {
 
 	public Reader() {
 		final MessageRepository messageRepository = new MessageRepositoryCassandra("localhost", "highrate", false);
-		transferRequestReader = new TransferRequestReader(messageRepository, new RabbitTemplate(HighRateConstants.getConnectionFactory()));
+		transferRequestReader = new TransferRequestReader(messageRepository, new RabbitTemplate(
+				HighRateConstants.getConnectionFactory(HighRateConstants.ROUTING_KEY_TRANSFER_REQUEST)));
 	}
 
 	public void processLoop() {

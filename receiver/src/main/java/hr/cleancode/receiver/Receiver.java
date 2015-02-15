@@ -34,7 +34,8 @@ public class Receiver {
 		final ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new DateTimeModule());
 		final MessageRepository messageRepository = new MessageRepositoryCassandra("localhost", "highrate", false);
-		final RabbitTemplate template = new RabbitTemplate(HighRateConstants.getConnectionFactory());
+		final RabbitTemplate templateReceiver = new RabbitTemplate(
+				HighRateConstants.getConnectionFactory(HighRateConstants.ROUTING_KEY_TRANSFER_REQUEST));
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		final AtomicLong connectionCount = new AtomicLong(0);
@@ -57,7 +58,7 @@ public class Receiver {
 									ChannelPipeline p = ch.pipeline();
 									p.addLast(new HttpRequestDecoder());
 									p.addLast(new HttpResponseEncoder());
-									p.addLast(new CFHttpHandler(mapper, messageRepository, template));
+									p.addLast(new CFHttpHandler(mapper, messageRepository, templateReceiver));
 								}
 							});
 
