@@ -35,7 +35,7 @@ public class Receiver {
 		mapper.registerModule(new DateTimeModule());
 		final MessageRepository messageRepository = new MessageRepositoryCassandra("localhost", "highrate", false);
 		final RabbitTemplate templateReceiver = new RabbitTemplate(
-				HighRateConstants.getConnectionFactory(HighRateConstants.ROUTING_KEY_TRANSFER_REQUEST));
+				HighRateConstants.getDirectExchangeConnectionFactory(HighRateConstants.QUEUE_NAME_REQUESTS, HighRateConstants.ROUTING_KEY_TRANSFER_REQUEST));
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		final AtomicLong connectionCount = new AtomicLong(0);

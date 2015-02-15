@@ -6,7 +6,6 @@ import hr.cleancode.domain.TransferRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 
@@ -23,7 +22,7 @@ public class Processor {
 	public void startProcessing() throws InterruptedException {
 		final AtomicInteger cnt = new AtomicInteger(0);
 		ConnectionFactory factoryRequests = HighRateConstants
-				.getConnectionFactory(HighRateConstants.ROUTING_KEY_TRANSFER_REQUEST);
+				.getDirectExchangeConnectionFactory(HighRateConstants.QUEUE_NAME_REQUESTS, HighRateConstants.ROUTING_KEY_TRANSFER_REQUEST);
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(factoryRequests);
 		Object listener = new Object() {
 			public void handleMessage(Object object) throws IOException {
@@ -32,11 +31,14 @@ public class Processor {
 					TransferRequest transferRequest = (TransferRequest) object;
 					processor.processTransferRequest(transferRequest);
 				}
+				else {
+					System.out.println("Greska");
+				}
 			}
 		};
 		MessageListenerAdapter adapter = new MessageListenerAdapter(listener);
 		container.setMessageListener(adapter);
-		container.setQueueNames(HighRateConstants.QUEUE_NAME);
+		container.setQueueNames(HighRateConstants.QUEUE_NAME_REQUESTS);
 		container.start();
 	}
 
