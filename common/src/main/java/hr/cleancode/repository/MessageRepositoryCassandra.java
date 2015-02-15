@@ -3,8 +3,6 @@ package hr.cleancode.repository;
 import static com.datastax.driver.core.querybuilder.QueryBuilder.bindMarker;
 import static com.datastax.driver.core.querybuilder.QueryBuilder.eq;
 import static com.datastax.driver.core.querybuilder.QueryBuilder.gt;
-import static com.datastax.driver.core.querybuilder.QueryBuilder.gte;
-import static com.datastax.driver.core.querybuilder.QueryBuilder.lt;
 
 import hr.cleancode.domain.TransferRequest;
 
@@ -50,6 +48,7 @@ public class MessageRepositoryCassandra implements MessageRepository {
 	private static Random random = new Random();
 	private ArrayBlockingQueue<ResultSetFuture> queue = new ArrayBlockingQueue<>(10000);
 	private final AtomicLong insertCount = new AtomicLong(0);
+
 	public MessageRepositoryCassandra(String cassandraHost, String keySpace, boolean asyncPersistence) {
 		this.cassandraHost = cassandraHost;
 		this.keySpace = keySpace;
@@ -71,11 +70,14 @@ public class MessageRepositoryCassandra implements MessageRepository {
 
 	private void prepareStatements() {
 		transferRequestInsertStatement = session.prepare("INSERT INTO transfer_requests " +
-				"(timestamp, user_id, currency_from, currency_to, rate, amount_buy, amount_sell, country, time_placed)" +
+				"(timestamp, user_id, currency_from, currency_to, rate, amount_buy, amount_sell, country, time_placed)"
+				+
 				"VALUES (?,?,?,?,?,?,?,?,?)");
 		transferRequestInsertStatement.setConsistencyLevel(ConsistencyLevel.ONE);
 
-		Select select = QueryBuilder.select("timestamp", "user_id", "currency_from", "currency_to", "rate", "amount_buy", "amount_sell", "country", "time_placed").
+		Select select = QueryBuilder
+				.select("timestamp", "user_id", "currency_from", "currency_to", "rate", "amount_buy", "amount_sell",
+						"country", "time_placed").
 				from("transfer_requests").
 				where(eq("country", bindMarker()))
 				.and(gt("timestamp", bindMarker()))
@@ -96,7 +98,7 @@ public class MessageRepositoryCassandra implements MessageRepository {
 				transferRequest.getAmountSell().floatValue(),
 				transferRequest.getOriginatingCountry(),
 				transferRequest.getTimePlaced().toDate()
-		);
+				);
 		Long currentCount = insertCount.addAndGet(1);
 		if (currentCount % 100 == 0) {
 			System.out.println("Current insertions " + currentCount);
@@ -113,7 +115,8 @@ public class MessageRepositoryCassandra implements MessageRepository {
 				} while (elem != null);
 
 			}
-		} else {
+		}
+		else {
 			session.execute(bs);
 		}
 	}
@@ -136,8 +139,8 @@ public class MessageRepositoryCassandra implements MessageRepository {
 			Double amountSell = new Double(row.getFloat("amount_sell"));
 			DateTime timePlaced = new DateTime(row.getDate("time_placed"));
 			String country = row.getString("country");
-			TransferRequest item = new TransferRequest(userId, currencyFrom, currencyTo, amountSell, amountBuy, rate, timePlaced, country);
-			item.setTimeReceived(timeReceived);
+			TransferRequest item = new TransferRequest(userId, currencyFrom, currencyTo, amountSell, amountBuy, rate,
+					timePlaced, country, timeReceived);
 			result.add(item);
 		}
 		return new ContinuousListResult<>(result, lastUUID);

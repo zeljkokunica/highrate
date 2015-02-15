@@ -3,10 +3,14 @@ package hr.cleancode.processor;
 import hr.cleancode.repository.MessageRepository;
 import hr.cleancode.repository.MessageRepositoryCassandra;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by zac on 14/02/15.
  */
 public class Processor {
+	private static final Logger logger = LoggerFactory.getLogger(Processor.class);
 	private TransferRequestReader transferRequestReader;
 
 	public Processor() {
@@ -22,7 +26,7 @@ public class Processor {
 				Thread.sleep(1);
 			}
 			catch (InterruptedException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 			}
 		}
 	}
