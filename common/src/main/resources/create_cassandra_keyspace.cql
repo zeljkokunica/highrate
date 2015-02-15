@@ -11,5 +11,6 @@ CREATE TABLE transfer_requests (
     amount_buy float,
     amount_sell float,
     country text,
-    PRIMARY KEY (user_id, timestamp)
+    time_placed timestamp,
+    PRIMARY KEY (country, timestamp)
   );

@@ -70,6 +70,7 @@ public abstract class JsonRequestHttpHandler extends SimpleChannelInboundHandler
 				}
 			}
 			catch (Exception e) {
+				System.out.println(e.getMessage());
 				responseStatus = HttpResponseStatus.INTERNAL_SERVER_ERROR;
 			}
 		}

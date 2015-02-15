@@ -15,8 +15,8 @@ public class MessageSender {
 	public static void main(String[] args) throws InterruptedException {
 		DateTime start = DateTime.now();
 		ExecutorService executorService = Executors.newCachedThreadPool();
-		for (int i = 0; i < 100; i++) {
-			executorService.execute(new Thread(new MessageSenderThread(i, 10000L, "http://localhost:9090/")));
+		for (int i = 0; i < 10; i++) {
+			executorService.execute(new Thread(new MessageSenderThread(i, 100000L, "http://localhost:9090/")));
 		}
 		executorService.shutdown();
 		while(!executorService.awaitTermination(1L, TimeUnit.SECONDS));

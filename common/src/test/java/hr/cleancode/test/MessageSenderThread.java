@@ -45,13 +45,6 @@ public class MessageSenderThread implements Runnable {
 			if (i % 100 == 0) {
 				System.out.println("Sender " + id + " sent " + i + " messages.");
 			}
-			try {
-				Thread.sleep(1);
-			}
-			catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
 		}
 		DateTime end = DateTime.now();
 		System.out.println(id + " finished in " + String.valueOf(end.getMillis() - start.getMillis())

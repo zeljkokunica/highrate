@@ -18,6 +18,7 @@ task copyToLib(type: Copy) {
 build.dependsOn(copyToLib)
 
 dependencies {
+    project(":common")
     testCompile 'junit:junit:4.0'
 }
 

@@ -14,6 +14,22 @@ public class TransferRequest {
 	private Double rate;
 	private DateTime timePlaced;
 	private String originatingCountry;
+	private DateTime timeReceived = DateTime.now();
+
+	public TransferRequest(String userId, String currencyFrom, String currencyTo, Double amountSell, Double amountBuy,
+			Double rate, DateTime timePlaced, String originatingCountry) {
+		this.userId = userId;
+		this.currencyFrom = currencyFrom;
+		this.currencyTo = currencyTo;
+		this.amountSell = amountSell;
+		this.amountBuy = amountBuy;
+		this.rate = rate;
+		this.timePlaced = timePlaced;
+		this.originatingCountry = originatingCountry;
+	}
+
+	public TransferRequest() {
+	}
 
 	public String getUserId() {
 		return userId;
@@ -77,6 +93,14 @@ public class TransferRequest {
 
 	public void setOriginatingCountry(String originatingCountry) {
 		this.originatingCountry = originatingCountry;
+	}
+
+	public DateTime getTimeReceived() {
+		return timeReceived;
+	}
+
+	public void setTimeReceived(DateTime timeReceived) {
+		this.timeReceived = timeReceived;
 	}
 
 

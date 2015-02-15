@@ -2,10 +2,10 @@ package hr.cleancode.receiver.cf;
 
 import hr.cleancode.domain.TransferRequest;
 import hr.cleancode.receiver.JsonRequestHttpHandler;
+import hr.cleancode.repository.MessageRepository;
 
 import java.io.IOException;
 
-import hr.cleancode.repository.MessageRepository;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
