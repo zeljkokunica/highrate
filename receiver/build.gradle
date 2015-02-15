@@ -20,7 +20,7 @@ build.dependsOn(copyToLib)
 dependencies {
     compile project(":common"),
             'io.netty:netty-all:4.0.25.Final',
-            'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
+            'org.codehaus.jackson:jackson-mapper-asl:1.9.13',
     testCompile 'junit:junit:4.0'
 }
 

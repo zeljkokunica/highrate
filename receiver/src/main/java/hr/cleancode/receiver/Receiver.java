@@ -1,5 +1,6 @@
 package hr.cleancode.receiver;
 
+import hr.cleancode.HighRateConstants;
 import hr.cleancode.receiver.cf.CFHttpHandler;
 import hr.cleancode.receiver.cf.DateTimeModule;
 import hr.cleancode.repository.MessageRepository;
@@ -21,6 +22,7 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 /**
  * Created by zac on 12/02/15.
@@ -32,6 +34,7 @@ public class Receiver {
 		final ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(new DateTimeModule());
 		final MessageRepository messageRepository = new MessageRepositoryCassandra("localhost", "highrate", false);
+		final RabbitTemplate template = new RabbitTemplate(HighRateConstants.getConnectionFactory());
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		final AtomicLong connectionCount = new AtomicLong(0);
@@ -54,7 +57,7 @@ public class Receiver {
 									ChannelPipeline p = ch.pipeline();
 									p.addLast(new HttpRequestDecoder());
 									p.addLast(new HttpResponseEncoder());
-									p.addLast(new CFHttpHandler(mapper, messageRepository));
+									p.addLast(new CFHttpHandler(mapper, messageRepository, template));
 								}
 							});
 

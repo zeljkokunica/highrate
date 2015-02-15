@@ -2,10 +2,12 @@ package hr.cleancode.domain;
 
 import org.joda.time.DateTime;
 
+import java.io.Serializable;
+
 /**
  * Created by zac on 12/02/15.
  */
-public class TransferRequest implements Comparable<TransferRequest> {
+public class TransferRequest implements Comparable<TransferRequest>, Serializable {
 	private String userId;
 	private String currencyFrom;
 	private String currencyTo;
@@ -15,6 +17,9 @@ public class TransferRequest implements Comparable<TransferRequest> {
 	private DateTime timePlaced;
 	private String originatingCountry;
 	private DateTime timeReceived = DateTime.now();
+
+	private TransferRequest() {
+	}
 
 	public TransferRequest(String userId, String currencyFrom, String currencyTo, Double amountSell, Double amountBuy,
 			Double rate, DateTime timePlaced, String originatingCountry, DateTime timeReceived) {
@@ -64,6 +69,11 @@ public class TransferRequest implements Comparable<TransferRequest> {
 	public DateTime getTimeReceived() {
 		return timeReceived;
 	}
+
+	public void validate() {
+		// TODO
+	}
+
 
 	@Override
 	public String toString() {
