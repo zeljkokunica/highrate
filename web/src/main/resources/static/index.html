@@ -2,52 +2,65 @@
 <html>
 <head>
     <title>Hello WebSocket</title>
+    <link href="c3.min.css" media="screen" rel="stylesheet" type="text/css" />
     <script src="sock.js"></script>
     <script src="stomp.js"></script>
-    <script type="text/javascript">
-        var stompClient = null;
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="c3.js"></script>
+    <script src="charts.js"></script>
 
-        function setConnected(connected) {
-        }
-
-        function connect() {
-            var socket = new SockJS('/hello');
-            stompClient = Stomp.over(socket);
-            stompClient.connect({}, function(frame) {
-                setConnected(true);
-                console.log('Connected: ' + frame);
-                stompClient.subscribe('/topic/stats', function(stats){
-                    console.log(stats);
-                });
-
-            });
-        }
-
-        function disconnect() {
-            stompClient.disconnect();
-            setConnected(false);
-            console.log("Disconnected");
-        }
-
-        function sendName() {
-            var name = document.getElementById('name').value;
-            stompClient.send("/app/hello", {}, JSON.stringify({ 'name': name }));
-        }
-
-        function showGreeting(message) {
-            var response = document.getElementById('response');
-            var p = document.createElement('p');
-            p.style.wordWrap = 'break-word';
-            p.appendChild(document.createTextNode(message));
-            response.appendChild(p);
-        }
-        connect();
-    </script>
 </head>
 <body>
+<div>
+    <h3 style="width: 100%; text-align: center">PROCESSED DATA</h3>
+    <div id="messagesPerSecond" style="width: 45%; float: left;"></div>
+    <div id="volumePerSecond" style="width: 45%; float: left;"></div>
+</div>
+
 <noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being enabled. Please enable
     Javascript and reload this page!</h2></noscript>
 <div>
 </div>
+
+<script type="text/javascript">
+    var stompClient = null,
+        charts = new Charts();
+    function setConnected(connected) {
+    }
+
+    function connect() {
+        var socket = new SockJS('/hello');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function(frame) {
+            setConnected(true);
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/stats', function(stats){
+                var parsed = JSON.parse(stats.body);
+                charts.addLastSecondStats(parsed);
+            });
+
+        });
+    }
+
+    function disconnect() {
+        stompClient.disconnect();
+        setConnected(false);
+        console.log("Disconnected");
+    }
+
+    function sendName() {
+        var name = document.getElementById('name').value;
+        stompClient.send("/app/hello", {}, JSON.stringify({ 'name': name }));
+    }
+
+    function showGreeting(message) {
+        var response = document.getElementById('response');
+        var p = document.createElement('p');
+        p.style.wordWrap = 'break-word';
+        p.appendChild(document.createTextNode(message));
+        response.appendChild(p);
+    }
+    connect();
+</script>
 </body>
 </html>
