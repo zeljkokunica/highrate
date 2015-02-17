@@ -2,7 +2,7 @@ package hr.cleancode.receiver;
 
 import hr.cleancode.HighRateConstants;
 import hr.cleancode.receiver.cf.CFHttpHandler;
-import hr.cleancode.receiver.cf.DateTimeModule;
+import hr.cleancode.converters.DateTimeModule;
 import hr.cleancode.repository.MessageRepository;
 import hr.cleancode.repository.MessageRepositoryCassandra;
 

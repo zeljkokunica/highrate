@@ -26,6 +26,7 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
     compile 'org.apache.httpcomponents:httpclient:4.4'
     compile 'org.springframework.amqp:spring-rabbit:1.4.3.RELEASE'
+    compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
     testCompile 'junit:junit:4.0'
 }
 

@@ -1,4 +1,4 @@
-package hr.cleancode.receiver.cf;
+package hr.cleancode.converters;
 
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.module.SimpleModule;

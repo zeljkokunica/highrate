@@ -1,5 +1,8 @@
 package hr.cleancode;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import hr.cleancode.domain.ReferenceExchange;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.FanoutExchange;
@@ -15,12 +18,24 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 public class HighRateConstants {
 	public static final String EXCHANGE = "highRateExcahnge";
 	public static final String EXCHANGE_TOPIC = "highRateExcahngeTopic";
-	public static final String EXCHANGE_FAUNOUT = "highRateExcahngeFanout";
+	public static final String EXCHANGE_FANOUT = "highRateExcahngeFanout";
 
 	public static final String QUEUE_NAME_REQUESTS = "transferRequests";
 	public static final String QUEUE_NAME_STATS = "statistics";
 	public static final String ROUTING_KEY_TRANSFER_REQUEST = "highrate.transferRequest";
 	public static final String ROUTING_KEY_STATISTICS = "highrate.transferStatistics";
+
+	public static final ImmutableMap<String, ReferenceExchange> CURRENCY_EXCHANGES =
+			new ImmutableMap.Builder<String, ReferenceExchange>()
+				.put("EUR-USD", new ReferenceExchange("EUR", "USD", 0.765))
+				.put("USD-EUR", new ReferenceExchange("USD", "EUR", 1.0 / 0.765))
+				.build();
+	public static final ImmutableList<String> COUNTRIES =
+			new ImmutableList.Builder<String>()
+					.add("FR")
+					.add("UK")
+					.add("US")
+					.build();
 
 	public static ConnectionFactory getDirectExchangeConnectionFactory(String queueName, String binding) {
 		ConnectionFactory cf = new CachingConnectionFactory();
@@ -49,7 +64,7 @@ public class HighRateConstants {
 		RabbitAdmin admin = new RabbitAdmin(cf);
 		Queue queue = new Queue(queueName);
 		admin.declareQueue(queue);
-		FanoutExchange exchange = new FanoutExchange(EXCHANGE_FAUNOUT);
+		FanoutExchange exchange = new FanoutExchange(EXCHANGE_FANOUT);
 		admin.declareExchange(exchange);
 		admin.declareBinding(BindingBuilder.bind(queue).to(exchange));
 		return cf;

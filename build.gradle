@@ -14,11 +14,12 @@ buildscript {
     dependencies {
         classpath('com.moowork.gradle:gradle-node-plugin:0.8')
         classpath('com.moowork.gradle:gradle-grunt-plugin:0.6')
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.1.10.RELEASE")
     }
 }
 
 allprojects {
-    version = "1.0.0.0"
+    version = "1.0.0"
     repositories {
         mavenCentral()
     }
