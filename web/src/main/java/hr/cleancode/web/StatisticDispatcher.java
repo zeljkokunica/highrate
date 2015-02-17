@@ -9,6 +9,7 @@ import java.util.Random;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 /**
@@ -16,15 +17,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
  */
 public class StatisticDispatcher {
 	private final Random random = new Random();
+
+	@Autowired
 	private SimpMessagingTemplate template;
 
-	public StatisticDispatcher(SimpMessagingTemplate template) {
-		this.template = template;
-		try {
-			startProcessing();
-		}
-		catch (Exception e) {
-		}
+	public StatisticDispatcher() throws InterruptedException {
+		startProcessing();
 	}
 
 	public void startProcessing() throws InterruptedException {

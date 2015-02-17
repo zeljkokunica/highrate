@@ -12,19 +12,9 @@ import org.springframework.stereotype.Controller;
  */
 @Controller
 public class StatisticController {
-	@Autowired
-	private SimpMessagingTemplate template;
-
-	private StatisticDispatcher statisticDispatcher;
-
-
 	@MessageMapping("/hello")
 	@SendTo("/topic/greetings")
 	public Greeting greeting(HelloMessage message) throws Exception {
-		if (statisticDispatcher == null) {
-			statisticDispatcher = new StatisticDispatcher(template);
-		}
-
 		return new Greeting("Jeee");
 	}
 }
