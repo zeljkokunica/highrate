@@ -10,7 +10,9 @@ jar {
 		attributes 'Implementation-Title': 'sender', 'Implementation-Version': "${version}"
 	}
 }
-
+springBoot {
+    mainClass = "hr.cleancode.Sender"
+}
 dependencies {
     compile project(":common")
     testCompile 'junit:junit:4.0'
