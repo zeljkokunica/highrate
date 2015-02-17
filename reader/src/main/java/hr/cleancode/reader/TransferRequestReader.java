@@ -1,35 +1,33 @@
 package hr.cleancode.reader;
 
 import hr.cleancode.domain.TransferRequest;
-import hr.cleancode.processor.TransferRequestProcessor;
 import hr.cleancode.repository.ContinuousListResult;
 import hr.cleancode.repository.MessageRepository;
+
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by zac on 14/02/15.
  */
+@Component
 public class TransferRequestReader {
 	private static final Logger logger = LoggerFactory.getLogger(TransferRequestReader.class);
-	private List<TransferRequestProcessor> processors = new ArrayList<>();
+	@Autowired
 	private MessageRepository messageRepository;
+	@Autowired
 	private RabbitTemplate rabbitTemplate;
+
 	private UUID lastReadRequest = null;
 
-	public TransferRequestReader(MessageRepository messageRepository, RabbitTemplate rabbitTemplate) {
-		this.messageRepository = messageRepository;
-		this.rabbitTemplate = rabbitTemplate;
+	public TransferRequestReader() {
 	}
 
-	public void registerProcessor(TransferRequestProcessor processor) {
-		this.processors.add(processor);
-	}
 
 	public void processChunk() {
 		ContinuousListResult<TransferRequest> requestsToProcess = messageRepository.listTransferRequests(lastReadRequest);

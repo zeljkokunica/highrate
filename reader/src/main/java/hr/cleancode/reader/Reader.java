@@ -7,21 +7,22 @@ import hr.cleancode.repository.MessageRepositoryCassandra;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by zac on 14/02/15.
  */
+@Component
 public class Reader {
 	private static final Logger logger = LoggerFactory.getLogger(Reader.class);
+	@Autowired
 	private TransferRequestReader transferRequestReader;
 
-	public Reader() {
-		final MessageRepository messageRepository = new MessageRepositoryCassandra("localhost", "highrate", false);
-		transferRequestReader = new TransferRequestReader(messageRepository, new RabbitTemplate(
-				HighRateConstants.getDirectExchangeConnectionFactory(HighRateConstants.QUEUE_NAME_REQUESTS, HighRateConstants.ROUTING_KEY_TRANSFER_REQUEST)));
-	}
-
-	public void processLoop() {
+	public void run() {
 		while (true) {
 			transferRequestReader.processChunk();
 			try {
@@ -34,6 +35,7 @@ public class Reader {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		new Reader().processLoop();
+		ApplicationContext ctx = new AnnotationConfigApplicationContext("hr.cleancode.reader");
+		ctx.getBean(Reader.class).run();
 	}
 }

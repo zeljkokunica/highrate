@@ -16,10 +16,14 @@ import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.util.CharsetUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by zac on 13/02/15.
  */
 public abstract class JsonRequestHttpHandler extends SimpleChannelInboundHandler {
+	private static final Logger logger = LoggerFactory.getLogger(JsonRequestHttpHandler.class);
 	private static final String RESPONSE_MESSAGE = "";
 	/**
 	 * @param content
@@ -31,8 +35,7 @@ public abstract class JsonRequestHttpHandler extends SimpleChannelInboundHandler
 	private final StringBuilder requestBuffer = new StringBuilder();
 
 	@Override
-	public void channelReadComplete(
-			ChannelHandlerContext ctx) {
+	public void channelReadComplete(ChannelHandlerContext ctx) {
 		ctx.flush();
 	}
 
@@ -70,7 +73,7 @@ public abstract class JsonRequestHttpHandler extends SimpleChannelInboundHandler
 				}
 			}
 			catch (Exception e) {
-				System.out.println(e.getMessage());
+				logger.error(e.getMessage(), e);
 				responseStatus = HttpResponseStatus.INTERNAL_SERVER_ERROR;
 			}
 		}
@@ -78,7 +81,6 @@ public abstract class JsonRequestHttpHandler extends SimpleChannelInboundHandler
 			responseStatus = HttpResponseStatus.BAD_REQUEST;
 		}
 
-		// Build the response object.
 		FullHttpResponse response = new DefaultFullHttpResponse(
 				HttpVersion.HTTP_1_1,
 				responseStatus,
@@ -89,7 +91,6 @@ public abstract class JsonRequestHttpHandler extends SimpleChannelInboundHandler
 			response.headers().set(HttpHeaders.Names.CONTENT_LENGTH, response.content().readableBytes());
 			response.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
 		}
-		// Write the response.
 		ctx.write(response);
 		return keepAlive;
 	}
@@ -101,6 +102,7 @@ public abstract class JsonRequestHttpHandler extends SimpleChannelInboundHandler
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+		logger.error(cause.getMessage(), cause);
 		ctx.close();
 	}
 }

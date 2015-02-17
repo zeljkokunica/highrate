@@ -1,10 +1,7 @@
 package hr.cleancode.receiver;
 
-import hr.cleancode.HighRateConstants;
 import hr.cleancode.receiver.cf.CFHttpHandler;
-import hr.cleancode.converters.DateTimeModule;
 import hr.cleancode.repository.MessageRepository;
-import hr.cleancode.repository.MessageRepositoryCassandra;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -19,26 +16,33 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by zac on 12/02/15.
  */
+@Component
 public class Receiver {
-	public static void main(String[] args)
-			throws InterruptedException {
+	private static final Logger logger = LoggerFactory.getLogger(Receiver.class);
+	@Autowired
+	private MessageRepository messageRepository;
+	@Autowired
+	private ObjectMapper objectMapper;
+	@Autowired
+	@Qualifier("messagesProcessingQueueTemplate")
+	private RabbitTemplate messagesProcessingQueueTemplate;
 
-		final ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(new DateTimeModule());
-		final MessageRepository messageRepository = new MessageRepositoryCassandra("localhost", "highrate", false);
-		final RabbitTemplate templateReceiver = new RabbitTemplate(
-				HighRateConstants.getDirectExchangeConnectionFactory(HighRateConstants.QUEUE_NAME_REQUESTS, HighRateConstants.ROUTING_KEY_TRANSFER_REQUEST));
+	public void run() throws InterruptedException {
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
-		final AtomicLong connectionCount = new AtomicLong(0);
 		try {
 			ServerBootstrap bootstrap = new ServerBootstrap();
 			bootstrap.group(bossGroup, workerGroup)
@@ -51,19 +55,18 @@ public class Receiver {
 								@Override
 								public void initChannel(
 										SocketChannel ch) throws Exception {
-									Long connections = connectionCount.addAndGet(1);
-									if (connections % 100 == 0) {
-										System.out.println("Connections " + connections);
-									}
+									logger.info("Initialize new channel");
 									ChannelPipeline p = ch.pipeline();
 									p.addLast(new HttpRequestDecoder());
 									p.addLast(new HttpResponseEncoder());
-									p.addLast(new CFHttpHandler(mapper, messageRepository, templateReceiver));
+									p.addLast(new CFHttpHandler(
+											objectMapper,
+											messageRepository,
+											messagesProcessingQueueTemplate));
 								}
 							});
-
 			ChannelFuture future = bootstrap.bind(9090).sync();
-
+			logger.info("receiving messages...");
 			future.channel().closeFuture().sync();
 
 		}
@@ -74,6 +77,11 @@ public class Receiver {
 			bossGroup.terminationFuture().sync();
 			workerGroup.terminationFuture().sync();
 		}
+	}
 
+	public static void main(String[] args)
+			throws InterruptedException {
+		ApplicationContext ctx = new AnnotationConfigApplicationContext("hr.cleancode.receiver");
+		ctx.getBean(Receiver.class).run();
 	}
 }

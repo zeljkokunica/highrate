@@ -21,7 +21,6 @@ public class CFHttpHandler extends JsonRequestHttpHandler {
 	private final ObjectMapper mapper;
 	private MessageRepository messageRepository;
 	private RabbitTemplate template;
-	private AtomicInteger cnt = new AtomicInteger(0);
 	public CFHttpHandler(ObjectMapper mapper, MessageRepository messageRepository, RabbitTemplate template) {
 		this.mapper = mapper;
 		this.messageRepository = messageRepository;

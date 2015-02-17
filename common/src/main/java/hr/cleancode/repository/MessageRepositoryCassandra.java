@@ -101,7 +101,7 @@ public class MessageRepositoryCassandra implements MessageRepository {
 				);
 		Long currentCount = insertCount.addAndGet(1);
 		if (currentCount % 100 == 0) {
-			System.out.println("Current insertions " + currentCount);
+			logger.info("inserted " + currentCount + " messages in this run...");
 		}
 		if (this.asyncPersistence) {
 			queue.add(session.executeAsync(bs));
