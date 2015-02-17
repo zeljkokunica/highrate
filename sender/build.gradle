@@ -11,7 +11,7 @@ jar {
 	}
 }
 springBoot {
-    mainClass = "hr.cleancode.Sender"
+    mainClass = "hr.cleancode.sender.Sender"
 }
 dependencies {
     compile project(":common")
