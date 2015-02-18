@@ -1,5 +1,6 @@
 package hr.cleancode.reader;
 
+import hr.cleancode.HighRateConstants;
 import hr.cleancode.domain.TransferRequest;
 import hr.cleancode.repository.ContinuousListResult;
 import hr.cleancode.repository.MessageRepository;
@@ -38,7 +39,7 @@ public class TransferRequestReader {
 	}
 
 	private void processTransferRequest(TransferRequest request) {
-		rabbitTemplate.convertAndSend("highRate", "highrate.transfer", request);
+		rabbitTemplate.convertAndSend(HighRateConstants.EXCHANGE, HighRateConstants.ROUTING_KEY_TRANSFER_REQUEST, request);
 	}
 
 }

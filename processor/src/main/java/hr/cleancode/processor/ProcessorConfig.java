@@ -1,12 +1,11 @@
 package hr.cleancode.processor;
 
 import hr.cleancode.HighRateConstants;
-import hr.cleancode.repository.MessageRepository;
-import hr.cleancode.repository.MessageRepositoryCassandra;
 
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,26 +15,26 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ProcessorConfig {
 
-	@Bean(name = "messagesProcessingQueueTemplate")
-	public RabbitTemplate messagesProcessingQueueTemplate() {
-		RabbitTemplate templateReceiver = new RabbitTemplate(
-				HighRateConstants.getDirectExchangeConnectionFactory(
-						HighRateConstants.QUEUE_NAME_REQUESTS,
-						HighRateConstants.ROUTING_KEY_TRANSFER_REQUEST));
-		return templateReceiver;
-	}
-
-	@Bean(name = "transferRequestsQueueFactory")
-	public ConnectionFactory transferRequestsQueueFactory() {
-		ConnectionFactory factoryRequests = HighRateConstants.getDirectExchangeConnectionFactory(
-				HighRateConstants.QUEUE_NAME_REQUESTS,
-				HighRateConstants.ROUTING_KEY_TRANSFER_REQUEST);
-
-		return factoryRequests;
+	@Bean
+	SimpleMessageListenerContainer transferRequestsListenerContainer(
+			ConnectionFactory connectionFactory,
+			MessageListenerAdapter listenerAdapter)
+	{
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(HighRateConstants.QUEUE_NAME_REQUESTS);
+		container.setMessageListener(listenerAdapter);
+		return container;
 	}
 
 	@Bean
-	public TransferRequestProcessor transferRequestProcessor() {
-		return new CountTransferRequestProcessor();
+	MessageListenerAdapter listenerAdapter(Processor processor) {
+		return new MessageListenerAdapter(processor, "receiveMessage");
 	}
+
+	@Bean
+	CountTransferRequestProcessor transferRequestProcessor(RabbitTemplate template) {
+		return new CountTransferRequestProcessor(template);
+	}
+
 }

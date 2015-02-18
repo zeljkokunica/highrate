@@ -24,32 +24,26 @@ public class Processor {
 	@Autowired
 	private TransferRequestProcessor processor;
 
-	@Autowired
-	private ConnectionFactory transferRequestsQueueFactory;
-	
+	/**
+	 * Receives a message from queue
+	 * @param object
+	 */
+	public void receiveMessage(Object object) {
+		if (object instanceof TransferRequest) {
+			TransferRequest transferRequest = (TransferRequest) object;
+			processor.processTransferRequest(transferRequest);
+		}
+		else {
+			logger.error("got wrong type of message: " + object.getClass().getName());
+		}
+	}
+
 	public void run() throws InterruptedException {
-		SimpleMessageListenerContainer transferRequestsListenerContainer = new SimpleMessageListenerContainer(
-				transferRequestsQueueFactory);
-		Object listener = new Object() {
-			public void handleMessage(Object object) throws IOException {
-				if (object instanceof TransferRequest) {
-					TransferRequest transferRequest = (TransferRequest) object;
-					processor.processTransferRequest(transferRequest);
-				}
-				else {
-					logger.error("got wrong type of message: " + object.getClass().getName());
-				}
-			}
-		};
-		MessageListenerAdapter adapter = new MessageListenerAdapter(listener);
-		transferRequestsListenerContainer.setMessageListener(adapter);
-		transferRequestsListenerContainer.setQueueNames(HighRateConstants.QUEUE_NAME_REQUESTS);
-		transferRequestsListenerContainer.start();
-		logger.info("waiting for messages to process...");
+		logger.info("processing messages...");
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		ApplicationContext ctx = new AnnotationConfigApplicationContext("hr.cleancode.processor");
+		ApplicationContext ctx = new AnnotationConfigApplicationContext("hr.cleancode.processor", "hr.cleancode.queue");
 		ctx.getBean(Processor.class).run();
 	}
 

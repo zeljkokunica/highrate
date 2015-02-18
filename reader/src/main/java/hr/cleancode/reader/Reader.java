@@ -1,14 +1,8 @@
 package hr.cleancode.reader;
 
-import hr.cleancode.HighRateConstants;
-import hr.cleancode.repository.MessageRepository;
-import hr.cleancode.repository.MessageRepositoryCassandra;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
@@ -35,7 +29,7 @@ public class Reader {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		ApplicationContext ctx = new AnnotationConfigApplicationContext("hr.cleancode.reader");
+		ApplicationContext ctx = new AnnotationConfigApplicationContext("hr.cleancode.reader", "hr.cleancode.queue");
 		ctx.getBean(Reader.class).run();
 	}
 }

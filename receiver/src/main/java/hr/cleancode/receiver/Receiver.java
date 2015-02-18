@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
@@ -37,8 +36,7 @@ public class Receiver {
 	@Autowired
 	private ObjectMapper objectMapper;
 	@Autowired
-	@Qualifier("messagesProcessingQueueTemplate")
-	private RabbitTemplate messagesProcessingQueueTemplate;
+	private RabbitTemplate rabbitTemplate;
 
 	public void run() throws InterruptedException {
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
@@ -62,7 +60,7 @@ public class Receiver {
 									p.addLast(new CFHttpHandler(
 											objectMapper,
 											messageRepository,
-											messagesProcessingQueueTemplate));
+											rabbitTemplate));
 								}
 							});
 			ChannelFuture future = bootstrap.bind(9090).sync();
@@ -81,7 +79,8 @@ public class Receiver {
 
 	public static void main(String[] args)
 			throws InterruptedException {
-		ApplicationContext ctx = new AnnotationConfigApplicationContext("hr.cleancode.receiver");
+		ApplicationContext ctx = new AnnotationConfigApplicationContext(
+				"hr.cleancode.receiver", "hr.cleancode.queue");
 		ctx.getBean(Receiver.class).run();
 	}
 }

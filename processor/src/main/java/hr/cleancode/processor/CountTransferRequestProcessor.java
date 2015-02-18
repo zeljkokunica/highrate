@@ -4,13 +4,14 @@ import hr.cleancode.HighRateConstants;
 import hr.cleancode.domain.CompleteStatisticsWrapper;
 import hr.cleancode.domain.TransferRequest;
 import hr.cleancode.domain.TransferRequestStatistics;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 /**
  * Created by zac on 14/02/15.
@@ -24,7 +25,10 @@ public class CountTransferRequestProcessor implements TransferRequestProcessor {
 	private TransferRequestStatistics lastMinuteStatistics = new TransferRequestStatistics();
 	private ConcurrentHashMap<String, TransferRequestStatistics> statisticsPerCountry = new ConcurrentHashMap<>();
 	private ConcurrentHashMap<String, TransferRequestStatistics> statisticsPerCurrency = new ConcurrentHashMap<>();
-	private RabbitTemplate templateStatistics;
+
+
+	private RabbitTemplate template;
+
 	private Timer timer = new Timer();
 
 	class SecondsTimer extends TimerTask {
@@ -48,7 +52,7 @@ public class CountTransferRequestProcessor implements TransferRequestProcessor {
 					if (newMinute) {
 						lastMinuteStatistics = new TransferRequestStatistics();
 					}
-					templateStatistics.convertAndSend(HighRateConstants.EXCHANGE_FANOUT,
+					template.convertAndSend(HighRateConstants.EXCHANGE_FANOUT,
 							HighRateConstants.ROUTING_KEY_STATISTICS, completeStatisticsWrapper);
 					tickCount = tickCount % TICKS_PER_MINUTE;
 
@@ -60,8 +64,8 @@ public class CountTransferRequestProcessor implements TransferRequestProcessor {
 		}
 	}
 
-	public CountTransferRequestProcessor() {
-		templateStatistics = new RabbitTemplate(HighRateConstants.getFanoutExchangeConnectionFactory(HighRateConstants.QUEUE_NAME_STATS));
+	public CountTransferRequestProcessor(RabbitTemplate template) {
+		this.template = template;
 		timer.schedule(new SecondsTimer(), 0, 1000);
 	}
 
