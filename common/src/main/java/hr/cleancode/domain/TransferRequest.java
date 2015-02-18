@@ -1,7 +1,10 @@
 package hr.cleancode.domain;
 
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.DateTime;
 
+import java.beans.Transient;
 import java.io.Serializable;
 
 /**
@@ -70,8 +73,29 @@ public class TransferRequest implements Comparable<TransferRequest>, Serializabl
 		return timeReceived;
 	}
 
+	private void checkRequired(String property, String value) {
+		if (StringUtils.isEmpty(value)) {
+			throw new PropertyValueRequired(property);
+		}
+	}
+
+	private void checkRequired(String property, Double value) {
+		if (value == null || value.doubleValue() < 0.01) {
+			throw new PropertyValueRequired(property);
+		}
+	}
+
 	public void validate() {
-		// TODO
+		checkRequired("userId", userId);
+		checkRequired("currencyFrom", currencyFrom);
+		checkRequired("currencyTo", currencyTo);
+		checkRequired("originatingCountry", originatingCountry);
+		checkRequired("amountBuy", amountBuy);
+		checkRequired("amountSell", amountSell);
+		checkRequired("rate", rate);
+		if (timePlaced == null) {
+			throw new PropertyValueRequired("timePlaced");
+		}
 	}
 
 
