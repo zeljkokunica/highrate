@@ -16,15 +16,17 @@ public class TransferRequestStatistics implements Serializable {
 	private Long count = 0L;
 	private Double volumeSell = 0d;
 	private Double volumeBuy = 0d;
+	private Double sumRate = 0d;
 	private Double avgRate = 0d;
 	private List<TransferRequest> topRequests;
 	private DateTime creationTimestamp = DateTime.now();
 
-	private TransferRequestStatistics(Long count, Double volumeSell, Double volumeBuy, Double avgRate, List<TransferRequest> topRequests) {
+	private TransferRequestStatistics(Long count, Double volumeSell, Double volumeBuy, Double sumOfRate, List<TransferRequest> topRequests) {
 		this.count = count;
 		this.volumeSell = volumeSell;
 		this.volumeBuy = volumeBuy;
-		this.avgRate = avgRate;
+		this.sumRate = sumOfRate;
+		this.avgRate = sumOfRate / count.doubleValue();
 		this.topRequests = topRequests;
 	}
 
@@ -36,11 +38,12 @@ public class TransferRequestStatistics implements Serializable {
 		List<TransferRequest> newTopRequests = new LinkedList<>(topRequests);
 		newTopRequests.add(request);
 		Collections.sort(newTopRequests);
+
 		TransferRequestStatistics result = new TransferRequestStatistics(
-				++count,
+				count + 1,
 				volumeSell + request.getAmountSell(),
 				volumeBuy + request.getAmountBuy(),
-				request.getRate(),
+				sumRate + request.getRate(),
 				new ArrayList<>(newTopRequests.subList(0, Math.min(10, newTopRequests.size()))));
 		return result;
 	}
