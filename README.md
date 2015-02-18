@@ -8,3 +8,11 @@ this is a proof of concept high rate processing project
 |reader|helper component which reads messages from cassandra and publishes them for processing|
 |sender|helper component that creates random messages and sends them to receiver via HTTP|
 
+# Tech stack
+* Netty - used by receiver to accept requests
+* Cassandra - used to store messages
+* RabbitMQ - used to distribute messages across components
+* c3js - used to display processing statistics
+* java 7 
+* spring framework
+* gradle
