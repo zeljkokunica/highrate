@@ -16,3 +16,16 @@ this is a proof of concept high rate processing project
 * java 7 
 * spring framework
 * gradle
+
+# Local setup
+* install jdk 7
+* install cassandra 2.1.2
+* install RabbitMQ
+* git clone git@github.com:zeljkokunica/highrate.git
+* cd highrate
+* gradle build
+* java -jar receiver/build/libs/receiver-1.0.0.jar - run receiver on port 9090
+* java -jar processor/build/libs/processor-1.0.0.jar - run processor
+* java -jar web/build/libs/web-1.0.0.jar --server.port=9091 - run weh on port 9091
+* navigate to http://localhost:9091 to see current statistics
+* java -jar sender/build/libs/sender-1.0.0.jar http://localhost:9090 1000 to send 10000 random messages (10 sender threads * 1000 requests)
