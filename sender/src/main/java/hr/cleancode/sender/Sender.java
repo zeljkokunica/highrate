@@ -4,6 +4,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -14,11 +15,11 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class Sender {
-	public void run() {
+	public void run(String url, Long requestsToSend) {
 		DateTime start = DateTime.now();
 		ExecutorService executorService = Executors.newCachedThreadPool();
 		for (int i = 0; i < 10; i++) {
-			executorService.execute(new Thread(new MessageSenderThread(i, 100000L, "http://78.46.95.77:9090/")));
+			executorService.execute(new Thread(new MessageSenderThread(i, requestsToSend, url)));
 		}
 		executorService.shutdown();
 		try {
@@ -32,6 +33,20 @@ public class Sender {
 
 	public static void main(String[] args) {
 		ApplicationContext ctx = new AnnotationConfigApplicationContext("hr.cleancode.sender");
-		ctx.getBean(Sender.class).run();
+		String url = null;
+		String requestsToSend = null;
+		if (args.length > 0) {
+			url = args[0];
+		}
+		if (args.length > 1) {
+			requestsToSend = args[1];
+		}
+		if (StringUtils.isEmpty(url)) {
+			url = "http://localhost:9090/";
+		}
+		if (StringUtils.isEmpty(requestsToSend)) {
+			requestsToSend = "1000";
+		}
+		ctx.getBean(Sender.class).run(url, Long.parseLong(requestsToSend));
 	}
 }

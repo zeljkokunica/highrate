@@ -23,7 +23,6 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-websocket:1.2.1.RELEASE')
     compile('org.springframework:spring-messaging:4.1.4.RELEASE')
     compile('com.fasterxml.jackson.datatype:jackson-datatype-joda:2.5.1')
-
     testCompile 'junit:junit:4.0'
 }
 

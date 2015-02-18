@@ -22,7 +22,9 @@ dependencies {
     compile 'ch.qos.logback:logback-classic:1.1.2'
     compile 'org.slf4j:slf4j-api:1.7.9'
     compile 'com.datastax.cassandra:cassandra-driver-core:2.1.4'
-    compile 'org.hectorclient:hector-core:1.1-4'
+    compile('org.hectorclient:hector-core:1.1-4') {
+        exclude group: 'javax.servlet'
+    }
     compile 'com.google.guava:guava:18.0'
     compile 'org.apache.httpcomponents:httpclient:4.4'
     compile 'org.springframework.amqp:spring-rabbit:1.4.3.RELEASE'

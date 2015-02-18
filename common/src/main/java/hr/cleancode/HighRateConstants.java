@@ -29,12 +29,20 @@ public class HighRateConstants {
 			new ImmutableMap.Builder<String, ReferenceExchange>()
 				.put("EUR-USD", new ReferenceExchange("EUR", "USD", 0.765))
 				.put("USD-EUR", new ReferenceExchange("USD", "EUR", 1.0 / 0.765))
+				.put("EUR-HRK", new ReferenceExchange("HRK", "EUR", 7.69))
+				.put("HRK-EUR", new ReferenceExchange("EUR", "HRK", 1.0 / 7.69))
 				.build();
 	public static final ImmutableList<String> COUNTRIES =
 			new ImmutableList.Builder<String>()
 					.add("FR")
 					.add("UK")
 					.add("US")
+					.add("HR")
+					.add("AUS")
+					.add("DE")
+					.add("HUN")
+					.add("BE")
+					.add("SWI")
 					.build();
 
 	public static ConnectionFactory getDirectExchangeConnectionFactory(String queueName, String binding) {

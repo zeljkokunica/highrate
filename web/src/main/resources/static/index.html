@@ -1,44 +1,86 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Hello WebSocket</title>
-    <link href="c3.min.css" media="screen" rel="stylesheet" type="text/css" />
+    <title>Highrate monitoring</title>
+    <link href="c3.min.css" media="screen" rel="stylesheet" type="text/css"/>
+    <script src="https://code.jquery.com/jquery-2.1.3.js"></script>
     <script src="sock.js"></script>
     <script src="stomp.js"></script>
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <script src="c3.js"></script>
-    <script src="charts.js"></script>
+    <script src="line-chart.js"></script>
+    <script src="bar-chart.js"></script>
 
 </head>
 <body>
-<div>
-    <h3 style="width: 100%; text-align: center">PROCESSED DATA</h3>
-    <div id="messagesPerSecond" style="width: 45%; float: left;"></div>
-    <div id="volumePerSecond" style="width: 45%; float: left;"></div>
+<div style="clear: both; width: 1000px; ">
+    <h3 style="width: 100%; text-align: left">PROCESSED REQUESTS</h3>
+    <table>
+        <tr>
+            <td>total requests:</td>
+            <td><span id="requests"/></td>
+        </tr>
+        <tr>
+            <td>total volume:</td>
+            <td><span id="volume"/></td>
+        </tr>
+    </table>
 </div>
 
-<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being enabled. Please enable
+<div style="width: 1000px; height: 400px;">
+    <div style="width: 50%; float: left;">
+        <h4 style="width: 100%; text-align: center">per second</h4>
+        <div id="messagesPerSecond" style="width: 100%;"></div>
+    </div>
+    <div style="width: 50%; float: left;">
+        <h4 style="width: 100%; text-align: center">per minute</h4>
+        <div id="messagesPerMinute" style="width: 100%;"></div>
+    </div>
+</div>
+
+<div style="clear: both; width: 1000px; height: 400px;">
+    <div style="width: 50%; float: left;">
+        <h4 style="width: 100%; text-align: center">per currency</h4>
+        <div id="messagesPerCurrency" style="width: 100%;"></div>
+    </div>
+    <div style="width: 50%; float: left;">
+        <h4 style="width: 100%; text-align: center">per country</h4>
+        <div id="messagesPerCountry" style="width: 100%"></div>
+    </div>
+</div>
+
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
+    enabled. Please enable
     Javascript and reload this page!</h2></noscript>
 <div>
 </div>
 
 <script type="text/javascript">
-    var stompClient = null,
-        charts = new Charts();
+    var
+            stompClient = null,
+            chartSeconds = new LineChart("#messagesPerSecond", "requests", "second", "count"),
+            chartMinutes = new LineChart("#messagesPerMinute", "requests", "minute", "count"),
+            chartCurrencies = new BarChart("#messagesPerCurrency", "requests", "count"),
+            chartCountries  = new BarChart("#messagesPerCountry", "requests", "count");
+
     function setConnected(connected) {
     }
 
     function connect() {
         var socket = new SockJS('/hello');
         stompClient = Stomp.over(socket);
-        stompClient.connect({}, function(frame) {
+        stompClient.connect({}, function (frame) {
             setConnected(true);
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/stats', function(stats){
-                var parsed = JSON.parse(stats.body);
-                charts.addLastSecondStats(parsed);
+            stompClient.subscribe('/topic/stats', function (message) {
+                var parsedStats = JSON.parse(message.body);
+                $("#requests").html(parsedStats.lifetime.count);
+                $("#volume").html(parsedStats.lifetime.volumeBuy.toFixed(2));
+                chartSeconds.processStats(parsedStats.seconds);
+                chartMinutes.processStats(parsedStats.minutes);
+                chartCurrencies.processStats(parsedStats.perCurrency)
+                chartCountries.processStats(parsedStats.perCountry)
             });
-
         });
     }
 
@@ -48,18 +90,6 @@
         console.log("Disconnected");
     }
 
-    function sendName() {
-        var name = document.getElementById('name').value;
-        stompClient.send("/app/hello", {}, JSON.stringify({ 'name': name }));
-    }
-
-    function showGreeting(message) {
-        var response = document.getElementById('response');
-        var p = document.createElement('p');
-        p.style.wordWrap = 'break-word';
-        p.appendChild(document.createTextNode(message));
-        response.appendChild(p);
-    }
     connect();
 </script>
 </body>

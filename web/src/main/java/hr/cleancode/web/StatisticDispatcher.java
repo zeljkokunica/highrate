@@ -1,6 +1,7 @@
 package hr.cleancode.web;
 
 import hr.cleancode.HighRateConstants;
+import hr.cleancode.domain.CompleteStatisticsWrapper;
 import hr.cleancode.domain.TransferRequestStatistics;
 
 import java.io.IOException;
@@ -32,8 +33,7 @@ public class StatisticDispatcher {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(factoryRequests);
 		Object listener = new Object() {
 			public void handleMessage(Object object) throws IOException {
-				if (object instanceof TransferRequestStatistics) {
-					System.out.println("Send stats " + object.toString());
+				if (object instanceof CompleteStatisticsWrapper) {
 					template.convertAndSend("/topic/stats", object);
 				}
 			}
