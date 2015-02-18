@@ -26,7 +26,7 @@ public class Processor {
 
 	@Autowired
 	private ConnectionFactory transferRequestsQueueFactory;
-
+	
 	public void run() throws InterruptedException {
 		SimpleMessageListenerContainer transferRequestsListenerContainer = new SimpleMessageListenerContainer(
 				transferRequestsQueueFactory);

@@ -3,12 +3,18 @@
  */
 var Charts = function () {
     var
+      lastValuesToShow = 60,
       messagesPerSecond = null,
-      messagesPerSecondData = ["Requests", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      messagesPerSecondData = ["Requests"],
       volumePerSecond = null,
-      volumePerSecondData = ["Volume", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      volumePerSecondData = ["Volume"],
 
       initialize = function () {
+        for (var i = 0; i < lastValuesToShow; i++) {
+          messagesPerSecondData.push(0);
+          volumePerSecondData.push(0);
+        }
+
         messagesPerSecond = c3.generate({
           bindto: '#messagesPerSecond',
           data: {
@@ -36,7 +42,7 @@ var Charts = function () {
             show: false
           }
         });
-        messagesPerSecond.axis.range({max: {y: 10000}});
+        //messagesPerSecond.axis.range({max: {y: 10000}});
 
         volumePerSecond = c3.generate({
           bindto: '#volumePerSecond',
@@ -69,8 +75,8 @@ var Charts = function () {
   },
   addLastSecondStats = function (stats) {
     messagesPerSecondData.splice(1, 0, stats.count);
-    if (messagesPerSecondData.length > 20) {
-      messagesPerSecondData = messagesPerSecondData.slice(0, 20);
+    if (messagesPerSecondData.length > lastValuesToShow) {
+      messagesPerSecondData = messagesPerSecondData.slice(0, lastValuesToShow);
     }
     messagesPerSecond.load({
       columns: [
@@ -79,8 +85,8 @@ var Charts = function () {
     });
 
     volumePerSecondData.splice(1, 0, stats.volumeBuy);
-    if (volumePerSecondData.length > 20) {
-      volumePerSecondData = volumePerSecondData.slice(0, 20);
+    if (volumePerSecondData.length > lastValuesToShow) {
+      volumePerSecondData = volumePerSecondData.slice(0, lastValuesToShow);
     }
     volumePerSecond.load({
       columns: [
