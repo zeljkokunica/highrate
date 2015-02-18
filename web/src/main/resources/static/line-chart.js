@@ -29,6 +29,9 @@ var LineChart = function (countContainer, valueUnit, timeUnit, valueField) {
         },
         legend: {
           show: false
+        },
+        transition: {
+          duration: 0
         }
       });
     },

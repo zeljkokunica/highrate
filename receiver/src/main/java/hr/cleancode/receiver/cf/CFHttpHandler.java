@@ -1,6 +1,7 @@
 package hr.cleancode.receiver.cf;
 
 import hr.cleancode.HighRateConstants;
+import hr.cleancode.domain.PropertyValueRequired;
 import hr.cleancode.domain.TransferRequest;
 import hr.cleancode.receiver.JsonRequestHttpHandler;
 import hr.cleancode.repository.MessageRepository;
@@ -37,6 +38,10 @@ public class CFHttpHandler extends JsonRequestHttpHandler {
 		}
 		catch (IOException e) {
 			logger.error(e.getMessage(), e);
+			return false;
+		}
+		catch (PropertyValueRequired pvr) {
+			logger.error(pvr.getMessage(), pvr);
 			return false;
 		}
 		return true;

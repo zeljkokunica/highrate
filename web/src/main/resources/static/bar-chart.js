@@ -44,6 +44,9 @@ var BarChart = function (container, valueUnit, valueField) {
         },
         legend: {
           show: false
+        },
+        transition: {
+          duration: 0
         }
       });
     },
