@@ -19,15 +19,23 @@ public class HighRateConstants {
 
 	public static final ImmutableMap<String, ReferenceExchange> CURRENCY_EXCHANGES =
 			new ImmutableMap.Builder<String, ReferenceExchange>()
-				.put("EUR-USD", new ReferenceExchange("EUR", "USD", 0.765))
-				.put("USD-EUR", new ReferenceExchange("USD", "EUR", 1.0 / 0.765))
-				.put("EUR-HRK", new ReferenceExchange("HRK", "EUR", 7.69))
-				.put("HRK-EUR", new ReferenceExchange("EUR", "HRK", 1.0 / 7.69))
-				.build();
+					.put("EUR-GBP", new ReferenceExchange("EUR", "GBP", 0.765))
+					.put("GBP-EUR", new ReferenceExchange("GBP", "EUR", 1.35))
+					.put("EUR-USD", new ReferenceExchange("EUR", "USD", 1.14))
+					.put("USD-EUR", new ReferenceExchange("USD", "EUR", 0.88))
+					.put("EUR-HRK", new ReferenceExchange("HRK", "EUR", 0.13))
+					.put("HRK-EUR", new ReferenceExchange("EUR", "HRK", 7.69))
+					.build();
 	public static final ImmutableList<String> COUNTRIES =
 			new ImmutableList.Builder<String>()
+					.add("POR")
+					.add("SP")
 					.add("FR")
 					.add("UK")
+					.add("POL")
+					.add("LUX")
+					.add("SLO")
+					.add("NL")
 					.add("US")
 					.add("HR")
 					.add("AUS")

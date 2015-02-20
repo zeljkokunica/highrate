@@ -92,8 +92,8 @@ public class MessageSenderThread implements Runnable {
 			HttpPost p = new HttpPost(this.uri);
 			ReferenceExchange ref = getRandomCurrencyExchange();
 			String country = HighRateConstants.COUNTRIES.get(random.nextInt(HighRateConstants.COUNTRIES.size()));
-			Double rate = ref.getReferenceExchangeRate() + (random.nextDouble() - 0.5) * 0.1 * ref.getReferenceExchangeRate();
-			Double volumeSell = random.nextDouble() * 1000;
+			Double rate = ref.getReferenceExchangeRate() + random.nextDouble() * 0.1 * ref.getReferenceExchangeRate();
+			Double volumeSell = (random.nextDouble() + 100.0) * 1000;
 			Double volumeBuy = volumeSell * rate;
 			TransferRequest request = new TransferRequest(
 					"12345",
@@ -116,10 +116,11 @@ public class MessageSenderThread implements Runnable {
 			if (r.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				return true;
 			}
+			System.out.println("Error sending request " + request);
 			return false;
 		}
 		catch (IOException e) {
-			System.out.println(e);
+			System.out.println(e.getMessage());
 			return false;
 		}
 
